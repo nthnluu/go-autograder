@@ -12,14 +12,7 @@ import (
 	"strings"
 )
 
-// Visibility mapping
-const (
-	hidden         string = "hidden"
-	afterDueDate          = "after_due_date"
-	afterPublished        = "after_published"
-	visible               = "visible"
-)
-
+// AutograderConfig is a struct that represents the parsed contents of autograder.config.json
 type AutograderConfig struct {
 	Visibility string `json:"visibility"`
 	Tests      []struct {
@@ -30,6 +23,8 @@ type AutograderConfig struct {
 	} `json:"tests"`
 }
 
+// TestResult is a struct that represents the result of a test case in Gradescope's specifications
+// https://gradescope-autograders.readthedocs.io/en/latest/specs/
 type TestResult struct {
 	Score      float64 `json:"score"`
 	MaxScore   float64 `json:"max_score"`
@@ -48,11 +43,18 @@ type AutograderOutput struct {
 
 // parseTestOutput converts the stdout of running go test into a mapping between test names and whether
 // they passed or not.
-func parseTestOutput(rawTestOutput []byte) (results map[string]bool) {
-	results = make(map[string]bool)
+func parseTestOutput(rawTestOutput []byte) (results map[string]struct {
+	Passed bool
+	Output string
+}) {
+	results = make(map[string]struct {
+		Passed bool
+		Output string
+	})
 
 	scanner := bufio.NewScanner(strings.NewReader(string(rawTestOutput)))
-	var currTest string
+	currTest := ""
+	currTestOutput := ""
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -60,7 +62,14 @@ func parseTestOutput(rawTestOutput []byte) (results map[string]bool) {
 			currTest = line[10:]
 		} else if len(line) >= 8 && (line[:8] == "--- PASS" || line[:8] == "--- FAIL") {
 			testPassed := line[4:8] == "PASS"
-			results[currTest] = testPassed
+			results[currTest] = struct {
+				Passed bool
+				Output string
+			}{Passed: testPassed, Output: currTestOutput}
+			currTest = ""
+			currTestOutput = ""
+		} else if currTest != "" {
+			currTestOutput += line
 		}
 	}
 
@@ -110,7 +119,7 @@ func JsonTestRunner() (result AutograderOutput, err error) {
 	// Generate autograder output from test results
 	result.Visibility = autograderConfig.Visibility
 	for _, testConfig := range autograderConfig.Tests {
-		testPassed, ok := testResults[testConfig.Name]
+		testRes, ok := testResults[testConfig.Name]
 		if ok {
 			res := TestResult{
 				Score:      0,
@@ -120,8 +129,10 @@ func JsonTestRunner() (result AutograderOutput, err error) {
 				Visibility: testConfig.Visibility,
 			}
 
-			if testPassed {
+			if testRes.Passed {
 				res.Score = testConfig.Points
+			} else {
+				res.Output = testRes.Output
 			}
 
 			result.Tests = append(result.Tests, res)
