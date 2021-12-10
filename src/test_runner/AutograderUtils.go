@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -59,13 +58,17 @@ func parseTestOutput(rawTestOutput []byte) (results map[string]struct {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) >= 7 && line[:7] == "=== RUN" {
+			// begin test
 			currTest = line[10:]
 		} else if len(line) >= 8 && (line[:8] == "--- PASS" || line[:8] == "--- FAIL") {
+			// end test and record result
 			testPassed := line[4:8] == "PASS"
 			results[currTest] = struct {
 				Passed bool
 				Output string
 			}{Passed: testPassed, Output: currTestOutput}
+
+			// reset currTest and currTestOutput
 			currTest = ""
 			currTestOutput = ""
 		} else if currTest != "" {
@@ -77,7 +80,7 @@ func parseTestOutput(rawTestOutput []byte) (results map[string]struct {
 }
 
 func JsonTestRunner() (result AutograderOutput, err error) {
-	// Open the JSON file
+	// Open the autograderconfig JSON file
 	testConfigPath, err := filepath.Abs("../../autograder.config.json")
 	if err != nil {
 		return
@@ -110,7 +113,7 @@ func JsonTestRunner() (result AutograderOutput, err error) {
 	// Run go test in the student submission
 	out, err := exec.Command("go", "test", "--v", "./...").CombinedOutput()
 	if out == nil && err != nil {
-		log.Fatalf("Error running go test: %v\n", err)
+		return
 	}
 
 	err = nil
