@@ -8,7 +8,7 @@ When the autograder runs, the student's submission will be copied into `/autogra
 
 ## File hierarchy
 - `autograder.config.json` - A JSON file that specifies config options for your autograder suite. Here is where you will define the names of tests and associated point values.
-- `setup.sh` - A setup (Bash) script that installs all your dependencies. We're running on Ubuntu 18.04 images, so you can use apt, or any other means of setting up packages. By default, it simply uses `apt-get` to install Go.
+- `setup.sh` - A setup (Bash) script that installs all your dependencies. Gradescope uses Docker running on Ubuntu 18.04 images, so you can use apt, or any other means of setting up packages. By default, it simply uses `apt-get` to install Go.
 - `run_autograder` - An executable script, in any language (with appropriate #! line), that compiles and runs your autograder suite and produces the output in the correct place.
 - `src/test_runner` - A Go module containing the code responsible for running `go test` on a student's submission, parsing the results from stdout, and returning a `results.json` file in Gradescope's specified format.
 
