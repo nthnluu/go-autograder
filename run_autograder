@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Set up autograder files
+
+export GOPATH=/autograder/source
+
+cd /autograder/source/src/test_runner
+
+# Copy the student's submission into the autograder's working directory
+mkdir -p /autograder/source/submission
+cp -a /autograder/submission/. /autograder/source/submission/
+
+# ===== MAKE CHANGES TO THE STUDENTS SUBMISSION IN /autograder/source/submission =====
+
+# ====================================================================================
+
+# Build a run the test_runner program
+go build .
+./test_runner
+
+# Copy the output json to the location specified by Gradescope's docs
+cp /autograder/source/results.json /autograder/results/results.json

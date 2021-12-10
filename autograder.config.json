@@ -1,0 +1,24 @@
+{
+    "tests": [
+        {
+            "name": "TestAddTwoNumbers",
+            "number": "1.1",
+            "points": 5
+        },
+        {
+            "name": "TestAddTwoNegativeNumbers",
+            "number": "1.2",
+            "points": 5
+        },
+        {
+            "name": "TestAddNums",
+            "number": "2.1",
+            "points": 5
+        },
+        {
+            "name": "TestAddNumsOne",
+            "number": "2.2",
+            "points": 5
+        }
+    ]
+}
