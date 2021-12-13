@@ -2,7 +2,7 @@
 A boilerplate for building Gradescope autograders for Go projects.
 
 ## Getting started
-This autograder works by running all Go tests in a student's submission, parsing the results from stdout, and generating a `results.json` file in Gradescope's specified format. Only tests that you configure in `autograder.config.json` are graded and sent to Gradescope. 
+This autograder works by running all Go tests in a student's submission, parsing the results from stdout, and generating a `results.json` file in Gradescope's specified format. Only tests that you specify in `autograder.config.json` are parsed and sent to Gradescope. 
 
 When the autograder runs, the student's submission will be copied into `/autograder/source/submission`. You can make any necessary changes to a student's submission -- such as copying in test suite files -- before the autograder runs by adding shell commands to `run_autograder` in the indicated area.
 
