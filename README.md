@@ -1,5 +1,5 @@
 # go-autograder
-A boilerplate for building Gradescope autograders for Go projects.
+A template for building Gradescope autograders for Go projects.
 
 ## Getting started
 This autograder works by running all Go tests in a student's submission, parsing the results from stdout, and generating a `results.json` file in Gradescope's specified format. Only tests that you specify in `autograder.config.json` are parsed and sent to Gradescope. 
